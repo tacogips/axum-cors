@@ -9,7 +9,7 @@ keywords = ["http", "web", "framework"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-axum = "0.2 "
+axum = "0.2"
 tower = { version = "0.4" }
 tower-http = { version = "0.1", features = ["set-header"] }
 pin-project-lite = "0.2"

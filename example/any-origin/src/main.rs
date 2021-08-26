@@ -1,16 +1,3 @@
-A CORS layer for [tokio-rs/axum](https://github.com/tokio-rs/axum).
-
-The logic it self is copied from [tower-web](https://github.com/carllerche/tower-web)
-
-## install
-```
-# Cargo.toml
-axum-cors = { git = "https://github.com/tacogips/axum-cors.git", branch="master" }
-```
-
-
-## usage
-```rust
 use axum::{handler::get, Router};
 use axum_cors::*;
 use http::{header, Method};
@@ -44,4 +31,3 @@ async fn main() {
 async fn handler() -> &'static str {
     "<h1>CORS check passed </h1>"
 }
-```
