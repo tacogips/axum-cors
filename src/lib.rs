@@ -209,7 +209,7 @@ mod test {
     }
 
     fn preflight_origin_request_builder() -> TestResult<http::request::Builder> {
-        let mut builder = http::Request::builder();
+        let builder = http::Request::builder();
         let builder = builder.method(Method::OPTIONS).header(
             header::ACCESS_CONTROL_REQUEST_METHOD,
             HeaderValue::from_static("POST"),
@@ -225,7 +225,7 @@ mod test {
             .into_config();
 
         let builder = || -> TestResult<http::request::Builder> {
-            let mut builder = http::Request::builder();
+            let builder = http::Request::builder();
             let builder = builder.method(Method::OPTIONS).header(
                 header::ORIGIN,
                 HeaderValue::from_static("http://test.example"),
@@ -260,7 +260,7 @@ mod test {
 
         assert_variant!(
             cfg.process_request(&disallowed_req_put),
-            Err(DisallowedMethod)
+            Err(_disallowed_method)
         );
 
         Ok(())
@@ -279,7 +279,7 @@ mod test {
             .into_config();
 
         let builder = || -> TestResult<http::request::Builder> {
-            let mut builder = http::Request::builder();
+            let builder = http::Request::builder();
             let builder = builder
                 .method(Method::OPTIONS)
                 .header(
@@ -338,7 +338,7 @@ mod test {
 
         assert_variant!(
             cfg.process_request(&disallowed_req_range),
-            Err(DisallowedHeader)
+            Err(_disallowed_header)
         );
 
         Ok(())
@@ -536,7 +536,7 @@ mod test {
             .header(header::ORIGIN, HeaderValue::from_static("null"))
             .body(())?;
 
-        assert_variant!(cfg.process_request(&req), Err(DisallowedOrigin));
+        assert_variant!(cfg.process_request(&req), Err(_disallowed_origin));
 
         Ok(())
     }
@@ -596,7 +596,7 @@ mod test {
 
         assert_variant!(
             cfg.process_request(&disallowed_req_unlisted),
-            Err(disallowed_origin)
+            Err(_disallowed_origin)
         );
 
         let disallowed_req_differing_case = req_builder()?
@@ -608,7 +608,7 @@ mod test {
 
         assert_variant!(
             cfg.process_request(&disallowed_req_differing_case),
-            Err(disallowed_origin)
+            Err(_disallowed_origin)
         );
 
         let disallowed_req_differing_scheme = req_builder()?
@@ -620,7 +620,7 @@ mod test {
 
         assert_variant!(
             cfg.process_request(&disallowed_req_differing_scheme),
-            Err(disallowed_origin)
+            Err(_disallowed_origin)
         );
 
         Ok(())

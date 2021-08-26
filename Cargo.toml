@@ -1,0 +1,20 @@
+[package]
+name = "axum-cors"
+version = "0.0.1"
+edition = "2018"
+license = "MIT"
+categories = ["asynchronous", "network-programming", "web-programming"]
+keywords = ["http", "web", "framework"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+axum = "0.2 "
+tower = { version = "0.4" }
+tower-http = { version = "0.1", features = ["set-header"] }
+pin-project-lite = "0.2"
+futures-util = "0.3"
+bytes = "1.0"
+http-body = "0.4"
+http = "0.2"
+log = "0.4.14"

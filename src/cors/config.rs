@@ -28,7 +28,9 @@ pub enum AllowedOrigins {
 impl AllowedOrigins {
     fn origin_allowed(&self, origin: &HeaderValue) -> bool {
         match self {
-            AllowedOrigins::Any { allow_null } => *allow_null || origin != HeaderValue::from_static("null"),
+            AllowedOrigins::Any { allow_null } => {
+                *allow_null || origin != HeaderValue::from_static("null")
+            }
             AllowedOrigins::Origins(origins) => origins.contains(origin),
         }
     }
@@ -48,8 +50,8 @@ where
     where
         I: IntoIterator<Item = A>,
     {
+        #[allow(clippy::mutable_key_type)]
         let origins = iter.into_iter().map(Into::into).collect();
-
         AllowedOrigins::Origins(origins)
     }
 }
@@ -118,22 +120,30 @@ impl Config {
                     origin,
                     requested_method
                 );
-                if !self.allowed_origins.origin_allowed(&origin) {
+                if !self.allowed_origins.origin_allowed(origin) {
                     return Err(DisallowedOrigin);
                 }
 
-                let requested_method = Method::from_bytes(requested_method.as_bytes()).map_err(InvalidMethod)?;
+                let requested_method =
+                    Method::from_bytes(requested_method.as_bytes()).map_err(InvalidMethod)?;
 
                 if !self.allowed_methods.contains(&requested_method) {
                     return Err(DisallowedMethod);
                 }
 
-                let requested_headers: Result<HashSet<_>, _> = match request.headers().get(header::ACCESS_CONTROL_REQUEST_HEADERS)
+                let requested_headers: Result<HashSet<_>, _> = match request
+                    .headers()
+                    .get(header::ACCESS_CONTROL_REQUEST_HEADERS)
                 {
-                    Some(headers) => headers.as_bytes().split(|&b| b == b',').map(HeaderName::from_bytes).collect(),
+                    Some(headers) => headers
+                        .as_bytes()
+                        .split(|&b| b == b',')
+                        .map(HeaderName::from_bytes)
+                        .collect(),
                     None => Ok(Default::default()),
                 };
 
+                #[allow(clippy::mutable_key_type)]
                 let requested_headers = requested_headers.map_err(InvalidHeader)?;
 
                 let mut invalid_headers = requested_headers.difference(&self.allowed_headers);
@@ -146,9 +156,15 @@ impl Config {
 
                 let mut headers = self.common_headers(origin.clone());
 
-                headers.insert(header::ACCESS_CONTROL_ALLOW_METHODS, self.allowed_methods_header.clone());
+                headers.insert(
+                    header::ACCESS_CONTROL_ALLOW_METHODS,
+                    self.allowed_methods_header.clone(),
+                );
 
-                headers.insert(header::ACCESS_CONTROL_ALLOW_HEADERS, self.allowed_headers_header.clone());
+                headers.insert(
+                    header::ACCESS_CONTROL_ALLOW_HEADERS,
+                    self.allowed_headers_header.clone(),
+                );
 
                 if let Some(ref max_age) = self.max_age {
                     headers.insert(header::ACCESS_CONTROL_MAX_AGE, max_age.clone());
@@ -161,14 +177,17 @@ impl Config {
                 // https://www.w3.org/TR/cors/#resource-requests
 
                 log::debug!("acrtual request origin:{:?}", origin);
-                if !self.allowed_origins.origin_allowed(&origin) {
+                if !self.allowed_origins.origin_allowed(origin) {
                     return Err(DisallowedOrigin);
                 }
 
                 let mut headers = self.common_headers(origin.clone());
 
                 if let Some(ref exposed_headers) = self.exposed_headers_header {
-                    headers.insert(header::ACCESS_CONTROL_EXPOSE_HEADERS, exposed_headers.clone());
+                    headers.insert(
+                        header::ACCESS_CONTROL_EXPOSE_HEADERS,
+                        exposed_headers.clone(),
+                    );
                 }
 
                 Ok(CorsResource::Simple(headers))
@@ -182,7 +201,10 @@ impl Config {
         if self.allow_credentials {
             headers.insert(header::ACCESS_CONTROL_ALLOW_ORIGIN, origin);
 
-            headers.insert(header::ACCESS_CONTROL_ALLOW_CREDENTIALS, HeaderValue::from_static("true"));
+            headers.insert(
+                header::ACCESS_CONTROL_ALLOW_CREDENTIALS,
+                HeaderValue::from_static("true"),
+            );
         } else {
             let allowed_origin = if self.prefer_wildcard {
                 HeaderValue::from_static("*")

@@ -1,10 +1,6 @@
-use super::builder::*;
 use super::config::*;
 
-use axum::{
-    body::{box_body, BoxBody},
-    response::IntoResponse,
-};
+use axum::body::{box_body, BoxBody};
 use bytes::Bytes;
 use futures_util::ready;
 use http::{self, HeaderMap, Request, Response, StatusCode};
@@ -16,7 +12,7 @@ use std::{
     sync::Arc,
     task::{Context, Poll},
 };
-use tower::{BoxError, Layer, Service};
+use tower::{BoxError, Service};
 
 #[derive(Debug, Clone)]
 pub struct CorsService<S> {
@@ -48,7 +44,9 @@ where
 
     fn call(&mut self, request: Request<ReqBody>) -> Self::Future {
         let inner = match self.config.process_request(&request) {
-            Ok(CorsResource::Preflight(headers)) => CorsFutureInner::Handled { headers: Some(headers) },
+            Ok(CorsResource::Preflight(headers)) => CorsFutureInner::Handled {
+                headers: Some(headers),
+            },
             Ok(CorsResource::Simple(headers)) => CorsFutureInner::Simple {
                 future: self.inner.call(request),
                 headers: Some(headers),
@@ -107,7 +105,7 @@ where
     type Output = Result<Response<BoxBody>, S::Error>;
 
     fn poll(mut self: Pin<&mut Self>, ctx: &mut Context<'_>) -> Poll<Self::Output> {
-        let mut this = self.as_mut().project();
+        let this = self.as_mut().project();
 
         match this {
             CorsFutureInnerProj::Simple { future, headers } => {
@@ -118,9 +116,7 @@ where
                         response.headers_mut().extend(headers);
                         Poll::Ready(Ok(response.map(box_body)))
                     }
-                    Err(err) => {
-                        return Poll::Ready(Err(err));
-                    }
+                    Err(err) => Poll::Ready(Err(err)),
                 }
             }
             CorsFutureInnerProj::Handled { headers } => {

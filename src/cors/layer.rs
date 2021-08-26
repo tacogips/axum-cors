@@ -13,6 +13,7 @@ impl CorsLayer {
         Self { config }
     }
 }
+
 impl<S> Layer<S> for CorsLayer {
     type Service = CorsService<S>;
     fn layer(&self, inner: S) -> Self::Service {
