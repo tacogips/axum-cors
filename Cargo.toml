@@ -1,6 +1,6 @@
 [package]
 name = "axum-cors"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2018"
 license = "MIT"
 categories = ["asynchronous", "network-programming", "web-programming"]

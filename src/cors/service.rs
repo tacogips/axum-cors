@@ -123,8 +123,6 @@ where
                 let mut response = http::Response::new(http_body::Full::new(Bytes::new()));
                 *response.status_mut() = StatusCode::FORBIDDEN;
 
-                //TODO()
-                println!("{:?} {:?}", "aaa", headers);
                 if let Some(headers) = headers.take() {
                     *response.status_mut() = StatusCode::NO_CONTENT;
                     *response.headers_mut() = headers;
