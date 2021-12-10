@@ -1,4 +1,9 @@
-A CORS layer for [tokio-rs/axum](https://github.com/tokio-rs/axum).
+# This repository is DEPRECATED
+This repository was worked on axum 0.2. `axum >=0.4` adopted another cors implementation of `tower-http>=2.0`
+
+See [The example](https://github.com/tokio-rs/axum/blob/v0.4.0/examples/cors/src/main.rs)
+
+## A CORS layer for [tokio-rs/axum](https://github.com/tokio-rs/axum).
 
 The logic it self is copied from [tower-web](https://github.com/carllerche/tower-web)
 
